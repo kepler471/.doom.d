@@ -138,9 +138,19 @@
 (map! "<C-S-tab>" #'previous-window-any-frame)
 (move-lines-binding)  ;  see alternative move region: https://www.emacswiki.org/emacs/MoveRegion
 
-;; iESS R console colour fix
-;; see - https://github.com/emacs-ess/ESS/issues/1193
+;; ESS R config
+
 (defun my-inferior-ess-init ()
-  (setq-local ansi-color-for-comint-mode 'filter)
+  "iESS R console colour fix. See https://github.com/emacs-ess/ESS/issues/1193"
+    (setq-local ansi-color-for-comint-mode 'filter)
   (smartparens-mode 1))
 (add-hook 'inferior-ess-mode-hook 'my-inferior-ess-init)
+
+(defun then_R_operator ()
+  "R - %>% operator or 'then' pipe operator"
+  (interactive)
+  (just-one-space 1)
+  (insert "%>%")
+  (just-one-space 1))
+(define-key ess-mode-map (kbd "C-S-m") 'then_R_operator)
+(define-key inferior-ess-mode-map (kbd "C-S-m") 'then_R_operator)
