@@ -1,156 +1,1 @@
-;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
-
-;; TODO: add script to repo to download external deps (eg. dotnet, fsac, pyls...)
-
-;; NOTE: Attempt to use --with-natural-title-bar.
-;;      see - https://notes.alexkehayias.com/emacs-natural-title-bar-with-no-text-in-macos/
-
-;; NOTE: see previous config (now at ~/.emacs.d.backup)
-
-;; Some functionality uses this to identify you, e.g. GPG configuration, email
-;; clients, file templates and snippets. It is optional.
-(setq user-full-name "Stelios Georgiou")
-
-;; Doom exposes five (optional) variables for controlling fonts in Doom:
-;;
-;; - `doom-font' -- the primary font to use
-;; - `doom-variable-pitch-font' -- a non-monospace font (where applicable)
-;; - `doom-big-font' -- used for `doom-big-font-mode'; use this for
-;;   presentations or streaming.
-;; - `doom-unicode-font' -- for unicode glyphs
-;; - `doom-serif-font' -- for the `fixed-pitch-serif' face
-;;
-;; See 'C-h v doom-font' for documentation and more examples of what they
-;; accept. For example:
-;;
-;; Fonts
-;; TODO: Set up as described by Doom, and set up non-monospace
-;;(setq doom-font (font-spec :family "Fira Code" :size 12 :weight 'semi-light)
-;;      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
-(set-frame-font "JetBrains Mono 14" nil t)
-(set-fontset-font "fontset-default" 'unicode "Apple Color Emoji" nil 'prepend)
-
-;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
-;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
-;; refresh your font settings. If Emacs still can't find your font, it likely
-;; wasn't installed correctly. Font issues are rarely Doom issues!
-
-;; Whenever you reconfigure a package, make sure to wrap your config in an
-;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
-;;
-;;   (after! PACKAGE
-;;     (setq x y))
-;;
-;; The exceptions to this rule:
-;;
-;;   - Setting file/directory variables (like `org-directory')
-;;   - Setting variables which explicitly tell you to set them before their
-;;     package is loaded (see 'C-h v VARIABLE' to look up their documentation).
-;;   - Setting doom variables (which start with 'doom-' or '+').
-;;
-;; Here are some additional functions/macros that will help you configure Doom.
-;;
-;; - `load!' for loading external *.el files relative to this one
-;; - `use-package!' for configuring packages
-;; - `after!' for running code after a package has loaded
-;; - `add-load-path!' for adding directories to the `load-path', relative to
-;;   this file. Emacs searches the `load-path' when you load packages with
-;;   `require' or `use-package'.
-;; - `map!' for binding new keys
-;;
-;; To get information about any of these functions/macros, move the cursor over
-;; the highlighted symbol at press 'K' (non-evil users must press 'C-c c k').
-;; This will open documentation for it, including demos of how they are used.
-;; Alternatively, use `C-h o' to look up a symbol (functions, variables, faces,
-;; etc).
-;;
-;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
-;; they are implemented.
-
-;; There are two ways to load a theme. Both assume the theme is installed and
-;; available. You can either set `doom-theme' or manually load a theme with the
-;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-nord)
-
-;; TODO: set up all the icons dired and treemacs - https://emacs.stackexchange.com/questions/71269/all-the-icons-are-all-white-in-dired
-(use-package! all-the-icons-dired
-  :after all-the-icons
-  :hook (dired-mode . all-the-icons-dired-mode)
-  :config (setq all-the-icons-dired-monochrome nil))
-
-(setq doom-themes-treemacs-theme "doom-colors")
-;; TODO: create a binding under C-c search for avy-goto-char
-;; TODO: Set up org file paths, org-projectile, org-bullets
-
-;; macOS keyboard fixes
-;; TODO: find out why other keyboard modifications are affected in Doom Emacs (eg #)
-;;      > this was because karabiner sends an "alt" key. By mapping `super' to the
-;;      > "alt" key, karabiner breaks.
-(setq mac-command-modifier      'meta
-      ns-command-modifier       'meta
-      mac-option-modifier       'super
-      ns-option-modifier        'super
-      mac-right-option-modifier 'nil
-      ns-right-option-modifier  'nil)
-
-;; This determines the style of line numbers in effect. If set to `nil', line
-;; numbers are disabled. For relative line numbers, set this to `relative'.
-(setq display-line-numbers-type t)
-
-;; If you use `org' and don't want your org files in the default location below,
-;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/org/")
-
-(setq confirm-nonexistent-file-or-buffer  t)
-(setq save-interprogram-paste-before-kill t)
-(setq visible-bell                        nil)
-(setq ring-bell-function                  'ignore)
-(setq minibuffer-prompt-properties
-      '(read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt))
-(setq select-enable-clipboard            t)
-(setq history-length                     1000)
-(setq +python-ipython-repl-args '("-i" "--simple-prompt"))
-
-;; Set title bar
-(setq frame-title-format
-      '((:eval (if (buffer-file-name)
-                   (abbreviate-file-name (buffer-file-name))
-                 "%b"))))
-
-;; Set initial window size
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
-
-(defun duplicate-line()
-  "Duplicate a line"
-  (interactive)
-  (move-beginning-of-line 1)
-  (kill-line)
-  (yank)
-  (open-line 1)
-  (next-line 1)
-  (yank))
-
-;; Keybindings
-(map! "C-c C-d" `duplicate-line)
-(map! "C-{" #'switch-to-prev-buffer)
-(map! "C-}" #'switch-to-next-buffer)
-(map! "<C-tab>" #'next-window-any-frame)
-(map! "<C-S-tab>" #'previous-window-any-frame)
-(move-lines-binding)  ;  see alternative move region: https://www.emacswiki.org/emacs/MoveRegion
-
-;; ESS R config
-
-(defun my-inferior-ess-init ()
-  "iESS R console colour fix. See https://github.com/emacs-ess/ESS/issues/1193"
-    (setq-local ansi-color-for-comint-mode 'filter)
-  (smartparens-mode 1))
-(add-hook 'inferior-ess-mode-hook 'my-inferior-ess-init)
-
-(defun then_R_operator ()
-  "R - %>% operator or 'then' pipe operator"
-  (interactive)
-  (just-one-space 1)
-  (insert "%>%")
-  (just-one-space 1))
-(define-key ess-mode-map (kbd "C-S-m") 'then_R_operator)
-(define-key inferior-ess-mode-map (kbd "C-S-m") 'then_R_operator)
+;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-;; TODO: add script to repo to download external deps (eg. dotnet, fsac, pyls...);; TODO: remove delay on which-key keymap, minibuffer suggestions, and company completions;; TODO: show project name either in title bar or modeline;; TODO: better buffer switching;; TODO: prepare some dictionaries - https://tecosaur.github.io/emacs-config/config.html#ispell;; TODO: use page breaks - https://tecosaur.github.io/emacs-config/config.html#prettier-page-breaks;; TODO: set up all the icons dired and treemacs - https://emacs.stackexchange.com/questions/71269/all-the-icons-are-all-white-in-dired;; TODO: Set up org file paths, org-projectile, org-bullets;; TODO: Fix wttrin. maybe file issue on tecosaur?;; TODO: Try RSS feeds - https://tecosaur.github.io/emacs-config/config.html#newsfeed;; NOTE: tried screenshot.el but macOS emacs does not use Cairo;; NOTE: Attempt to use --with-natural-title-bar.;;      see - https://notes.alexkehayias.com/emacs-natural-title-bar-with-no-text-in-macos/;; NOTE: see previous config (now at ~/.emacs.d.backup);; User(setq user-full-name "Stelios Georgiou");; Fonts(setq doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'light)      doom-variable-pitch-font (font-spec :family "Helvetica" :size 16 :weight 'light)      doom-unicode-font (font-spec :family "Apple Color Emoji"))(defvar mixed-pitch-modes  '(org-mode LaTeX-mode markdown-mode gfm-mode Info-mode text-mode)  "Modes that `mixed-pitch-mode' should be enabled in.")(defun init-mixed-pitch-h ()  "Hook `mixed-pitch-mode' into each mode in `mixed-pitch-modes'.Also immediately enables `mixed-pitch-modes' if currently in one of the modes."  (when (memq major-mode mixed-pitch-modes)    (mixed-pitch-mode 1))  (dolist (hook mixed-pitch-modes)    (add-hook (intern (concat (symbol-name hook) "-hook")) #'mixed-pitch-mode)))(add-hook 'doom-init-ui-hook #'init-mixed-pitch-h);; Themes(setq doom-theme 'doom-flatwhite);; Info colours(use-package! info-colors  :commands (info-colors-fontify-node))(add-hook 'Info-selection-hook 'info-colors-fontify-node);; Window settings(add-to-list 'default-frame-alist (cons 'top    0))(add-to-list 'default-frame-alist (cons 'left   0))(add-to-list 'default-frame-alist (cons 'height 100))(add-to-list 'default-frame-alist (cons 'width  160));; (add-to-list 'default-frame-alist '(fullscreen . maximized))(setq +zen-text-scale 0.5)(setq doom-themes-treemacs-theme "doom-colors");; macOS keyboard fixes;;;; TODO: find out why other keyboard modifications are affected in Doom Emacs (eg #);;      > this was because karabiner sends an "alt" key. By mapping `super' to the;;      > "alt" key, karabiner breaks.(setq mac-command-modifier      'meta      ns-command-modifier       'meta      mac-option-modifier       'super      ns-option-modifier        'super      mac-right-option-modifier 'nil      ns-right-option-modifier  'nil);; Lines(setq display-line-numbers-type 'relative)(+global-word-wrap-mode t);; Org(setq org-directory "~/org/");; Clipboard(setq save-interprogram-paste-before-kill t)(setq select-enable-clipboard t)(setq history-length 1000)(setq confirm-nonexistent-file-or-buffer  t);; Notifications(setq visible-bell nil)(setq ring-bell-function 'ignore)(setq minibuffer-prompt-properties      '(read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt));; Company(after! company  (setq company-idle-delay 0.1        company-show-quick-access t))(set-company-backend!  '(text-mode    markdown-mode    gfm-mode)  '(:separate    company-ispell    company-files    company-yasnippet));; Which-key(after! which-key (setq which-key-idle-delay 0.1) (setq which-key-idle-secondary-delay 0.1));; Set title bar(setq frame-title-format      '((:eval (if (buffer-file-name)                   (abbreviate-file-name (buffer-file-name))                 "%b"))));; Projects(setq +workspaces-on-switch-project-behavior nil)(after! doom-modeline  (setq doom-modeline-persp-name t));; Text editing(defun duplicate-line()  "Duplicate a line"  (interactive)  (move-beginning-of-line 1)  (kill-line)  (yank)  (open-line 1)  (next-line 1)  (yank))(map! "C-c C-d" `duplicate-line)(map! "s-SPC" #'just-one-space);; Movement(setq scroll-margin 3)(setq scroll-preserve-screen-position t) ; ARG = 'always has the side effect of disabling C-l(map! "C-{" #'switch-to-prev-buffer)(map! "C-}" #'switch-to-next-buffer)(map! "<C-tab>" #'next-window-any-frame)(map! "<C-S-tab>" #'previous-window-any-frame)(map! :map doom-leader-workspaces/windows-map      :desc "Rotate windows"      "SPC" #'rotate-layout)(move-lines-binding)  ;  see alternative move region: https://www.emacswiki.org/emacs/MoveRegion(map! "<swipe-left>" #'better-jumper-jump-backward)(map! "<swipe-right>" #'better-jumper-jump-forward)(map! :after avy      :map doom-leader-search-map      :desc "Goto char"      "a" #'avy-goto-char);; ESS R(defun my-inferior-ess-init ()  "iESS R console colour fix. See https://github.com/emacs-ess/ESS/issues/1193"    (setq-local ansi-color-for-comint-mode 'filter)  (smartparens-mode 1))(add-hook 'inferior-ess-mode-hook 'my-inferior-ess-init)(defun then_R_operator ()  "R - %>% operator or 'then' pipe operator"  (interactive)  (just-one-space 1)  (insert "%>%")  (just-one-space 1))(map! :after ess-mode      :map (ess-mode-map inferior-ess-mode-map)      "C-S-m" #'then_R_operator);; The following may require `(doom! (ess +lsp))'.;; (set-company-backend! 'ess-r-mode '(company-R-args company-R-objects company-dabbrev-code :separate))(use-package! ess-view-data  :config  (map! :map ess-view-data-mode-map        "n" #'scroll-up-command        "p" #'scroll-down-command));; eBook(use-package! nov  :mode ("\\.epub\\'" . nov-mode)  :config  (map! :map nov-mode-map        :n "RET" #'nov-scroll-up)  (defun doom-modeline-segment--nov-info ()    (concat     " "     (propertize      (cdr (assoc 'creator nov-metadata))      'face 'doom-modeline-project-parent-dir)     " "     (cdr (assoc 'title nov-metadata))     " "     (propertize      (format "%d/%d"              (1+ nov-documents-index)              (length nov-documents))      'face 'doom-modeline-info)))  (advice-add 'nov-render-title :override #'ignore)  (defun +nov-mode-setup ()    "Tweak nov-mode to our liking."    (face-remap-add-relative 'variable-pitch                             :family "IowanOldSt BT"                             :height 1.4                             :width 'semi-expanded)    (face-remap-add-relative 'default :height 1.3)    (setq-local line-spacing 0.2                next-screen-context-lines 4                shr-use-colors nil)    (require 'visual-fill-column nil t)    (setq-local visual-fill-column-center-text t                visual-fill-column-width 81                nov-text-width 80)    (visual-fill-column-mode 1)    (hl-line-mode -1)    ;; Re-render with new display settings    (nov-render-document)    ;; Look up words with the dictionary.    (add-to-list '+lookup-definition-functions #'+lookup/dictionary-definition)    ;; Customise the mode-line to make it more minimal and relevant.    (setq-local     mode-line-format     `((:eval        (doom-modeline-segment--workspace-name))       (:eval        (doom-modeline-segment--window-number))       (:eval        (doom-modeline-segment--nov-info))       ,(propertize         " %P "         'face 'doom-modeline-buffer-minor-mode)       ,(propertize         " "         'face (if (doom-modeline--active) 'mode-line 'mode-line-inactive)         'display `((space                     :align-to                     (- (+ right right-fringe right-margin)                        ,(* (let ((width (doom-modeline--font-width)))                              (or (and (= width 1) 1)                                  (/ width (frame-char-width) 1.0)))                            (string-width                             (format-mode-line (cons "" '(:eval (doom-modeline-segment--major-mode))))))))))       (:eval (doom-modeline-segment--major-mode)))))  (add-hook 'nov-mode-hook #'+nov-mode-setup));; Calc(setq calc-angle-mode 'rad  ; radians are rad      calc-symbolic-mode t) ; keeps expressions like \sqrt{2} irrational for as long as possible

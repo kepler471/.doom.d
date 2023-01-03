@@ -49,13 +49,27 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t)
 
-(package! move-lines
-  :recipe (:host github :repo "targzeta/move-lines"))
+(package! move-lines :recipe (:host github :repo "targzeta/move-lines"))
 
-;; (package! all-the-icons-dired)
+(package! rotate)
+
+;; (package! wttrin :recipe (:local-repo "wttrin"))
+
+(package! info-colors)
 
 ;; (package! page-break-lines)
 
-;; (package! speed-type)
+(package! speed-type)
 
 ;; (package! wgrep)
+
+(package! calibredb :pin)
+
+(package! nov :pin)
+
+(package! calctex
+  :recipe (:host github
+           :repo "johnbcoughlin/calctex"
+           :files ("*.el" "calctex/*.el" "calctex-contrib/*.el" "org-calctex/*.el" "vendor")))
+
+(package! ess-view-data)
